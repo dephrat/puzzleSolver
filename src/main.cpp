@@ -13,7 +13,7 @@ int main() {
     char emptySymbol = '.';
     PuzzleSolver solver(emptySymbol);
 
-    //When picking the symbols, don't use '-'. '-' is the default used for empty squares.
+    //When assigning symbols to pieces, don't use the emptySymbol.
     Piece orangePiece(orangePieceDefn, 'o');
     Piece orangePiece2(orangePieceDefn, '2');
     Piece orangePiece3(orangePieceDefn, '3');
@@ -27,9 +27,9 @@ int main() {
     Piece redPiece(redPieceDefn, 'r');
     Piece purplePiece(purplePieceDefn, 'p');
     std::vector<Piece> pieces = 
-    //    {orangePiece};
         {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
 
+    //Attempt to solve the puzzle, time the attempt
     try {
         using Time = std::chrono::steady_clock;
         const auto start = Time::now();
@@ -42,6 +42,7 @@ int main() {
         std::cerr << error.what() << std::endl;
     }
 
+    //Displays the final board state)
     PuzzleDisplay::displayGrid(solver.getGrid());
 }
 

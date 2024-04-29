@@ -7,7 +7,7 @@
 
 class PuzzleSolver {
     std::vector<std::vector<char>> grid;
-    char emptySymbol = '-';
+    char emptySymbol;
 
     bool fitInGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol);
     void removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 

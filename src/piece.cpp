@@ -146,7 +146,7 @@ void Piece::displayOrientation(int orientationIndex) {
     auto orientation = orientations[orientationIndex];
     for (auto row : orientation) {
         for (int col : row) {
-            std::cout << (col ? symbol : '0') << " ";
+            std::cout << (col ? symbol : '.') << " ";
         }
         std::cout << "\n";
     }
