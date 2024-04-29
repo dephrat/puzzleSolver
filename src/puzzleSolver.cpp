@@ -25,8 +25,11 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
                 removeFromGrid(orientation, row, col, symbol, true);
                 return false;
             }
-        }        
+            
+        }  
+             
     }
+    
     return true;
 }
 
@@ -101,3 +104,72 @@ bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int d
     return false;
 }
 
+//Eliminates the need for recursion
+bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {
+    std::vector<std::pair<int, int>> locationTracker(pieces.size(), std::make_pair(0, 0)); //If unplaced, stores the next square to be tried. If placed, this is the square of the piece.
+    std::vector<int> orientationTracker(pieces.size(), 0); //Stores which orientation each piece is on
+    std::vector<bool> placedTracker(pieces.size(), false); //Stores whether a piece is currently placed.
+    int depth = 0;
+    //depth will represent the index of the piece we're trying to fit
+    while (true) {
+        if (depth >= 8 || depth < 3) std::cout << depth << "\n";
+        //assume right now that piece[depth] exists 
+        //and that orientationTracker[depth] is a valid orientations index
+
+        if (depth >= int(size(pieces))) {
+            return true;
+        }
+        if (depth < 0) {
+            return false;
+        }
+        if (orientationTracker[depth] >= pieces[depth].orientations.size()) {
+            throw std::runtime_error("Error: Invalid orientations index, theoretically possible because a piece had no orientations (nonRecursiveSolver)");
+        }
+        if (locationTracker[depth].first >= gridHeight || locationTracker[depth].second >= gridWidth) {
+            throw std::runtime_error("Error: Invalid grid location (nonRecursiveSolver)");
+        }
+
+        //try to fit current orientation of piece[depth] using piece[depth].orientations[orientationTracker[depth]]
+        auto currentOrientation = pieces[depth].orientations[orientationTracker[depth]];
+        int row = locationTracker[depth].first;
+        int col = locationTracker[depth].second;
+
+        bool pieceCanGoHere;
+        if (placedTracker[depth] == true) {
+            removeFromGrid(currentOrientation, row, col, pieces[depth].symbol);
+            placedTracker[depth] = false;
+            pieceCanGoHere = false;
+        } else {
+            pieceCanGoHere = fitInGrid(currentOrientation, row, col, pieces[depth].symbol);
+        }
+        if (pieceCanGoHere) { //if it fits, move to the next piece
+            placedTracker[depth] = true;
+            depth++;
+        } else if (row < gridHeight - 1 || col < gridWidth - 1) { //if there are more spots to try
+            //prepare to try the next spot
+            if (col == gridWidth - 1) {
+                col = 0;
+                row++;
+            } else {
+                col++;
+            }
+            locationTracker[depth] = std::make_pair(row, col);
+        } else if (orientationTracker[depth] < pieces[depth].orientations.size() - 1) { //if there are more orientations to try
+            //go back to the start and try the next orientation
+            locationTracker[depth] = std::make_pair(0, 0);
+            orientationTracker[depth]++;
+        } else if (depth > 0) { //if there are earlier pieces to try
+            //reset orientation and location for the next time we try this piece
+            locationTracker[depth] = std::make_pair(0, 0);
+            orientationTracker[depth] = 0;
+            //go to the previous piece
+            depth--;
+        } else {
+            return false;
+        }
+        
+        
+        
+        
+    }
+}
