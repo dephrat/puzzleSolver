@@ -16,8 +16,8 @@ class PuzzleSolver {
     public:
     char getEmptySymbol() { return emptySymbol; }
     const std::vector<std::vector<char>>& getGrid() { return grid; }
-    bool nonRecursiveStartup(const std::vector<Piece>& pieces, const int depth);
-    bool recursiveStartup(const std::vector<Piece>& pieces, const int depth);
+    bool nonRecursiveSolver(const std::vector<Piece>& pieces, const int depth);
+    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth);
     
     PuzzleSolver(const char emptySymbol);
 };

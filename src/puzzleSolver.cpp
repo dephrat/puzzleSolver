@@ -74,7 +74,7 @@ const bool allowPartial) {
 // pieces: vector of all pieces to be fit in
 // depth: index of the piece that that iteration is trying to place
 //Requirement: depth must be positive
-bool PuzzleSolver::recursiveStartup(const std::vector<Piece>& pieces, const int depth) {
+bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth) {
     if (depth == 8 || depth < 4) std::cout << depth << "\n";
     assert(depth >= 0);
     if (depth >= pieces.size()) return true;
@@ -87,7 +87,7 @@ bool PuzzleSolver::recursiveStartup(const std::vector<Piece>& pieces, const int 
                 bool pieceFits = fitInGrid(orientation, row, col, pieces[depth].symbol);
                 if (pieceFits) {
                     //recurse with the next piece
-                    bool result = recursiveStartup(pieces, depth + 1);
+                    bool result = recursiveSolver(pieces, depth + 1);
                     if (result) {
                         return true;
                     } else {

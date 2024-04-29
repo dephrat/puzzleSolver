@@ -33,7 +33,7 @@ int main() {
     try {
         using Time = std::chrono::steady_clock;
         const auto start = Time::now();
-        bool result = solver.recursiveStartup(pieces, 0);
+        bool result = solver.recursiveSolver(pieces, 0);
         const auto end = Time::now();
         std::chrono::duration<double, std::milli> fp_ms = end - start;
         std::cout << (result ? "Success!" : "Failure.") << std::endl;
