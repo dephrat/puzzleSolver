@@ -1,7 +1,7 @@
 #include "puzzleSolver.hpp"
 
-PuzzleSolver::PuzzleSolver(const char defaultSymbol) : defaultSymbol(defaultSymbol) {
-    grid.resize(gridHeight, std::vector<char>(gridWidth, defaultSymbol));
+PuzzleSolver::PuzzleSolver(const char emptySymbol) : emptySymbol(emptySymbol) {
+    grid.resize(gridHeight, std::vector<char>(gridWidth, emptySymbol));
 }
 
 //Fit the piece in the grid at the specified spot if possible, returns false otherwise.
@@ -19,7 +19,7 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
             char current = grid[row + r][col + c];
             if (current == symbol) {
                 throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (fitInGrid)"); 
-            } else if (current == defaultSymbol) {
+            } else if (current == emptySymbol) {
                 grid[row + r][col + c] = symbol;
             } else {
                 removeFromGrid(orientation, row, col, symbol, true);
@@ -40,7 +40,7 @@ const bool allowPartial) {
                 if (row+r < 0 || row+r >= grid.size() || col+c < 0 || col+c >= grid[0].size()) continue;
                 //else if we find our symbol, remove it
                 if (grid[row + r][col + c] == symbol) {
-                    if (orientation[r+2][c+2]) grid[row + r][col + c] = defaultSymbol;
+                    if (orientation[r+2][c+2]) grid[row + r][col + c] = emptySymbol;
                     else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid, 1)");
                 }
             }         
@@ -56,7 +56,7 @@ const bool allowPartial) {
                 bool inOrientation = orientation[r+2][c+2];
                 if (inGridBounds) {
                     if (grid[row + r][col + c] == symbol) {
-                        if (inOrientation) grid[row + r][col + c] = defaultSymbol;
+                        if (inOrientation) grid[row + r][col + c] = emptySymbol;
                         else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid, 2)");
                     } else if (inOrientation) {
                         throw std::runtime_error("Error: Unable to find piece square during full removal (removeFromGrid)");
