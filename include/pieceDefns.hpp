@@ -1,8 +1,8 @@
 #pragma once
 
-#include <array>
+#include <vector>
 
-extern std::array<std::array<bool, 5>, 5> 
+extern std::vector<std::vector<bool>> 
     orangePieceDefn, 
     cyanPieceDefn, 
     bluePieceDefn, 

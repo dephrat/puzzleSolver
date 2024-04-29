@@ -1,16 +1,15 @@
-#include <array>
 #include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
 #include "piece.hpp"
 
-Piece::Piece(const std::array<std::array<bool, 5>, 5>& pieceDefn, char s, bool removeDuplicates) : symbol(s) {
+Piece::Piece(const std::vector<std::vector<bool>>& pieceDefn, char s, bool removeDuplicates) : symbol(s) {
     //Add piece defn to vector
     orientations.push_back(pieceDefn);
 
     //Generate rotations and flipped rotations, storing each in vector
-    std::array<std::array<bool, 5>, 5> tempGrid = pieceDefn;
+    std::vector<std::vector<bool>> tempGrid = pieceDefn;
     //rotate three times, add each to orientations
     for (int i = 1; i <= 3; i++) {
         rotate(tempGrid);
@@ -28,13 +27,6 @@ Piece::Piece(const std::array<std::array<bool, 5>, 5>& pieceDefn, char s, bool r
     }
 
     if (removeDuplicates) {
-        //up to 8 unique orientations
-        //8 choose 2 is 28
-        //28 pairs
-        //what's the fastest way, given 8 strings, to check if any are duplicates? Sort them lexicographically, then linear check!
-        //8 strings, length 25, create a binary tree, 
-
-        //maybe go row by row, convert to integer, use to bucket sort?
         removeDuplicateOrientations();
     }
 
@@ -42,7 +34,7 @@ Piece::Piece(const std::array<std::array<bool, 5>, 5>& pieceDefn, char s, bool r
 }
 
 //Rotate clockwise. Chosen arbitrarily for our purposes. (Other option was counter-clockwise)
-void Piece::rotate(std::array<std::array<bool, 5>, 5>& pieceGrid) {
+void Piece::rotate(std::vector<std::vector<bool>>& pieceGrid) {
     size_t n = pieceGrid.size();
     for (int i = 0; i <= n / 2; ++i) {
         for (int j = i; j <= n-1-i-1; ++j) {
@@ -56,7 +48,7 @@ void Piece::rotate(std::array<std::array<bool, 5>, 5>& pieceGrid) {
 }
 
 //Flip across a vertical line. Chosen arbitrarily for our purposes. (Other option was across a horizontal line)
-void Piece::flip(std::array<std::array<bool, 5>, 5>& pieceGrid) {
+void Piece::flip(std::vector<std::vector<bool>>& pieceGrid) {
     size_t n = pieceGrid.size();
     for (int i = 0; i <= n - 1; ++i) { //for each row
         for (int j = 0; j <= n / 2; ++j) { //for each column on the left half of the pieceGrid

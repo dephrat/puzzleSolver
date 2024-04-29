@@ -1,6 +1,7 @@
 #include "puzzleSolver.hpp"
 
-PuzzleSolver::PuzzleSolver(const char defaultSymbol) {
+PuzzleSolver::PuzzleSolver(const char _defaultSymbol) {
+    defaultSymbol = _defaultSymbol;
     for (size_t row = 0; row < gridHeight; ++row) {
         for (size_t col = 0; col < gridWidth; ++col) {
             grid[row][col] = defaultSymbol;
@@ -10,7 +11,7 @@ PuzzleSolver::PuzzleSolver(const char defaultSymbol) {
 
 //Fit the piece in the grid at the specified spot if possible, returns false otherwise.
 //Currently inserts the piece by aligning the center of the 5x5 grid with the specified location. May need updates if I allow larger/unique pieces.
-bool PuzzleSolver::fitInGrid(const std::array<std::array<bool, 5>, 5> &orientation, const int row, const int col, const char symbol) {
+bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol) {
     //go from -2 to +2 relative to center. This will have to be adjusted if we allow for more variety in piece sizes.
     //(-2, -2) is (currently) the posn of the top left corner of the orientation grid
     for (int r = -2; r < 3; ++r) {
@@ -34,8 +35,8 @@ bool PuzzleSolver::fitInGrid(const std::array<std::array<bool, 5>, 5> &orientati
     return true;
 }
 
-void PuzzleSolver::removeFromGrid(const std::array<std::array<bool, 5>, 5> &orientation, const int row, const int col, const char symbol, 
-const bool allowPartial = false) {
+void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
+const bool allowPartial) {
     if (allowPartial) {
         //in this case, it's okay if only part of the orientation has been placed in the grid
         for (int r = -2; r < 3; ++r) {

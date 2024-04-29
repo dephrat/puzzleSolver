@@ -1,17 +1,14 @@
-#include <array>
 #include "pieceDefns.hpp"
 
-std::array<std::array<bool, 5>, 5> orangePieceDefn = {
-    {
+std::vector<std::vector<bool>> orangePieceDefn = {
         {0,0,0,0,0},
         {0,0,1,0,0},
         {0,1,1,1,0},
         {0,0,1,0,0},
         {0,0,0,0,0}
-    }
 };
 
-std::array<std::array<bool, 5>, 5> cyanPieceDefn = {
+std::vector<std::vector<bool>> cyanPieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -21,7 +18,7 @@ std::array<std::array<bool, 5>, 5> cyanPieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> bluePieceDefn = {
+std::vector<std::vector<bool>> bluePieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -31,7 +28,7 @@ std::array<std::array<bool, 5>, 5> bluePieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> pinkPieceDefn = {
+std::vector<std::vector<bool>> pinkPieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -41,7 +38,7 @@ std::array<std::array<bool, 5>, 5> pinkPieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> yellowPieceDefn = {
+std::vector<std::vector<bool>> yellowPieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -51,7 +48,7 @@ std::array<std::array<bool, 5>, 5> yellowPieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> greenPieceDefn = {
+std::vector<std::vector<bool>> greenPieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -61,7 +58,7 @@ std::array<std::array<bool, 5>, 5> greenPieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> limePieceDefn = {
+std::vector<std::vector<bool>> limePieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -71,7 +68,7 @@ std::array<std::array<bool, 5>, 5> limePieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> redPieceDefn = {
+std::vector<std::vector<bool>> redPieceDefn = {
     {
         {0,1,1,0,0},
         {0,0,1,0,0},
@@ -81,7 +78,7 @@ std::array<std::array<bool, 5>, 5> redPieceDefn = {
     }
 };
 
-std::array<std::array<bool, 5>, 5> purplePieceDefn = {
+std::vector<std::vector<bool>> purplePieceDefn = {
     {
         {0,0,1,1,0},
         {0,0,0,1,0},
