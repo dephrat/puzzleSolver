@@ -27,13 +27,14 @@ int main() {
     Piece redPiece(redPieceDefn, 'r');
     Piece purplePiece(purplePieceDefn, 'p');
     std::vector<Piece> pieces = 
-        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
+        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece};//, purplePiece};
 
     //Attempt to solve the puzzle, time the attempt
     try {
         using Time = std::chrono::steady_clock;
         const auto start = Time::now();
         bool result = solver.recursiveSolver(pieces, 0);
+        //bool result = solver.nonRecursiveSolver(pieces);
         const auto end = Time::now();
         std::chrono::duration<double, std::milli> fp_ms = end - start;
         std::cout << (result ? "Success!" : "Failure.") << std::endl;
