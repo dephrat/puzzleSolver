@@ -2,11 +2,13 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "puzzleDisplay.hpp"
 #include "global.hpp"
 #include "piece.hpp"
 #include "pieceDefns.hpp"
+#include "puzzleDisplay.hpp"
+#include "puzzleSolver.hpp"
 
+/*
 void removeFromGrid(std::vector<std::vector<char>> &grid, const std::vector<std::vector<bool>> &orientation, 
 int row, int col, char symbol, bool allowPartial = false) {
     if (allowPartial) {
@@ -105,8 +107,13 @@ if (depth == 8 || depth < 4) std::cout << depth << "\n";
     return false;
 }
 
-//Setup Pieces, run startup, display results
+*/
+
+//Setup Pieces, create PuzzleSolver, run startup, display results
 int main() {
+
+    PuzzleSolver solver('.');
+
     //When picking the symbols, don't use '-'. '-' is the default used for empty squares.
     Piece orangePiece(orangePieceDefn, 'o');
     Piece orangePiece2(orangePieceDefn, '2');
@@ -124,19 +131,10 @@ int main() {
     //    {orangePiece};
         {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
 
-    std::vector<std::vector<char>> grid(gridHeight, std::vector<char>(gridWidth));
-
-    for (int i = 0; i < gridHeight; ++i) {
-        for (int j = 0; j < gridWidth; ++j) {
-            grid[i][j] = '-';
-        }
-    }
-
-    
     try {
         using Time = std::chrono::steady_clock;
         const auto start = Time::now();
-        bool result = startup(pieces, grid, 0);
+        bool result = solver.recursiveStartup(pieces, 0);
         const auto end = Time::now();
         std::chrono::duration<double, std::milli> fp_ms = end - start;
         std::cout << (result ? "Success!" : "Failure.") << std::endl;
@@ -145,6 +143,6 @@ int main() {
         std::cerr << error.what() << std::endl;
     }
 
-    PuzzleDisplay::displayGrid(grid);
+    PuzzleDisplay::displayGrid(solver.getGrid());
 }
 

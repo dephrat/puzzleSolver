@@ -7,7 +7,7 @@
 
 class PuzzleSolver {
     std::vector<std::vector<char>> grid;
-    static char defaultSymbol;
+    char defaultSymbol = '-';
 
     bool fitInGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol);
     void removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
@@ -15,10 +15,9 @@ class PuzzleSolver {
 
     public:
     char getDefaultSymbol() { return defaultSymbol; }
+    const std::vector<std::vector<char>>& getGrid() { return grid; }
     bool nonRecursiveStartup(const std::vector<Piece>& pieces, const int depth);
     bool recursiveStartup(const std::vector<Piece>& pieces, const int depth);
     
     PuzzleSolver(const char defaultSymbol);
 };
-
-char PuzzleSolver::defaultSymbol = 'z';
