@@ -21,6 +21,8 @@ class PuzzleSolver {
     bool nonRecursiveSolver(const std::vector<Piece>& pieces);
     bool recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions = 1, 
     const bool displaySolutions = true, const bool storeSolutions = true);
+    bool thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions = 1, 
+    const bool displaySolutions = true, const bool storeSolutions = true);
     const std::vector<std::vector<std::vector<char>>> &getSolutions() { return solutions; }
 
     PuzzleSolver(const char emptySymbol);
