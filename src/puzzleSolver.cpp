@@ -75,7 +75,7 @@ const bool allowPartial) {
 //Requirement: depth must be non-negative
 //Note: If numSolutions is negative, this function will return all possible solutions
 //Note: Here, the return value indicates whether we've reached our target numSolutions
-bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions, bool displaySolutions) {
+bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions, const bool displaySolutions, const bool storeSolutions) {
     assert(depth >= 0);
     if (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) return true;
     
@@ -84,6 +84,8 @@ bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int d
         ++PuzzleSolver::solutionsFound;
         if (displaySolutions)
             PuzzleDisplay::displayGrid(grid);
+        if (storeSolutions)
+            solutions.push_back(grid);
         //if we've found enough solutions, then we can stop
         return numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions;
     }

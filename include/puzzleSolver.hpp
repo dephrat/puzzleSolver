@@ -11,6 +11,7 @@ class PuzzleSolver {
     char emptySymbol;
     static inline int solutionsFound = 0;
     //maybe include a data structure to hold all the found solutions
+    std::vector<std::vector<std::vector<char>>> solutions;
 
     bool fitInGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol);
     void removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
@@ -18,7 +19,9 @@ class PuzzleSolver {
 
     public:
     bool nonRecursiveSolver(const std::vector<Piece>& pieces);
-    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth, int numSolutions = 1, bool displaySolutions = true);
+    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions = 1, 
+    const bool displaySolutions = true, const bool storeSolutions = true);
+    const std::vector<std::vector<std::vector<char>>> &getSolutions() { return solutions; }
 
     PuzzleSolver(const char emptySymbol);
 };
