@@ -20,7 +20,7 @@ $(OBJ_DIR)/pieceDefns.o: include/pieceDefns.hpp src/pieceDefns.cpp | $(OBJ_DIR)
 $(OBJ_DIR)/puzzleDisplay.o: include/puzzleDisplay.hpp src/puzzleDisplay.cpp include/global.hpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c src/puzzleDisplay.cpp -o $(OBJ_DIR)/puzzleDisplay.o
 
-$(OBJ_DIR)/puzzleSolver.o: include/puzzleSolver.hpp src/puzzleSolver.cpp include/global.hpp include/piece.hpp | $(OBJ_DIR)
+$(OBJ_DIR)/puzzleSolver.o: include/puzzleSolver.hpp src/puzzleSolver.cpp include/global.hpp include/piece.hpp include/puzzleSolver.hpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c src/puzzleSolver.cpp -o $(OBJ_DIR)/puzzleSolver.o
 
 $(OBJ_DIR):

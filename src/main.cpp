@@ -8,11 +8,13 @@
 #include "puzzleDisplay.hpp"
 #include "puzzleSolver.hpp"
 
-//Setup Pieces, create PuzzleSolver, run startup, display results
+//Create PuzzleSolver, setup Pieces, run the solver, display the results
 int main() {
+    //Create PuzzleSolver
     char emptySymbol = '.';
     PuzzleSolver solver(emptySymbol);
 
+    //Setup Pieces
     //When assigning symbols to pieces, don't use the emptySymbol.
     Piece orangePiece(orangePieceDefn, 'o');
     Piece orangePiece2(orangePieceDefn, '2');
@@ -27,13 +29,13 @@ int main() {
     Piece redPiece(redPieceDefn, 'r');
     Piece purplePiece(purplePieceDefn, 'p');
     std::vector<Piece> pieces = 
-        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece};//, purplePiece};
+        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
 
-    //Attempt to solve the puzzle, time the attempt
+    //Run the solver, time the attempt
     try {
         using Time = std::chrono::steady_clock;
         const auto start = Time::now();
-        bool result = solver.recursiveSolver(pieces, 0);
+        bool result = solver.recursiveSolver(pieces, 0, 1, false);
         //bool result = solver.nonRecursiveSolver(pieces);
         const auto end = Time::now();
         std::chrono::duration<double, std::milli> fp_ms = end - start;
@@ -43,7 +45,6 @@ int main() {
         std::cerr << error.what() << std::endl;
     }
 
-    //Displays the final board state)
-    PuzzleDisplay::displayGrid(solver.getGrid());
+    //Display the results
 }
 

@@ -29,8 +29,6 @@ Piece::Piece(const std::vector<std::vector<bool>>& pieceDefn, char s, bool remov
     if (removeDuplicates) {
         removeDuplicateOrientations();
     }
-
-
 }
 
 //Rotate clockwise. Chosen arbitrarily for our purposes. (Other option was counter-clockwise)
@@ -51,6 +49,8 @@ void Piece::rotate(std::vector<std::vector<bool>>& pieceGrid) {
 void Piece::flip(std::vector<std::vector<bool>>& pieceGrid) {
     size_t n = pieceGrid.size();
     for (int i = 0; i <= n - 1; ++i) { //for each row
+
+        //MAYBE THIS SHOULD BE < n / 2 INSTEAD OF LE, CONSIDER EVEN AND ODD CASES, DO TESTING
         for (int j = 0; j <= n / 2; ++j) { //for each column on the left half of the pieceGrid
             //swap the pieceGrid values
             bool temp = pieceGrid[i][j];
@@ -66,7 +66,7 @@ void Piece::removeDuplicateOrientations() {
     if (orientations.size() == 0) return;
 
     //Convert orientations into strings. 
-    // Note: This will break if the length of an orientation's row exceeds 7! 
+    // Note: This will break if the length of an orientation's row exceeds 7.
     std::vector<std::pair<std::string, int>> orientationStrings;
     for (int i = 0; i < orientations.size(); ++i) {
         std::string s = "";
@@ -82,7 +82,7 @@ void Piece::removeDuplicateOrientations() {
         orientationStrings.push_back(make_pair(s, i));
     }
 
-    //Now we perform bucket sort on the strings, find duplicates, and remove them from orientations
+    //Now we perform radix sort on the strings, find duplicates, and remove them from orientations
 
     //Radix sort:
     std::vector<std::vector<std::pair<std::string, int>>> buckets(256); //256 possible chars requires 256 buckets
