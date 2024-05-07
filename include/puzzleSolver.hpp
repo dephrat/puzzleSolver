@@ -17,11 +17,8 @@ class PuzzleSolver {
     const bool allowPartial = false);
 
     public:
-    char getEmptySymbol() { return emptySymbol; }
-    const std::vector<std::vector<char>>& getGrid() { return grid; }
     bool nonRecursiveSolver(const std::vector<Piece>& pieces);
-    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth); //eventually replace this with the other one, set default numSolutions to 1
-    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth, int numSolutions, bool displaySolutions = true);
+    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth, int numSolutions = 1, bool displaySolutions = true);
 
     PuzzleSolver(const char emptySymbol);
 };
