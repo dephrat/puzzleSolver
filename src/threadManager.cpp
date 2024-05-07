@@ -4,7 +4,15 @@ std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(c
     //create thread arguments using vector<ThreadArgs>
 
     //create threads, give them PuzzleSolver's thread_recursiveSolver method
-    
+    pthread_mutex_init(&myMutex,0);
+        for (int i = 0; i < numThreads; ++i) {
+            pthread_create(&(threads[i]), NULL, &thread_startup, (void*)(&(my_args[i])));
+        }
+        for (int i = 0; i < numThreads; ++i) {
+            pthread_join(threads[i], NULL);
+        }
+        pthread_mutex_destroy(&myMutex);
+
 
     //
 
