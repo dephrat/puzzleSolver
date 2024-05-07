@@ -1,5 +1,11 @@
 #include "puzzleDisplay.hpp"
 
+void PuzzleDisplay::displaySolutions(const std::vector<std::vector<std::vector<char>>> &solutions, const int numNewlines) {
+    for (auto solution : solutions) {
+        displayGrid(solution, numNewlines);
+    }
+}
+
 void PuzzleDisplay::displayGrid(const std::vector<std::vector<char>> &grid, const int numNewlines) {
     for (int row = 0; row < gridHeight; ++row) {
         for (int col = 0; col < gridWidth; ++col) {
