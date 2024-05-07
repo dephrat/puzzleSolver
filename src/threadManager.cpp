@@ -1,9 +1,7 @@
 #include "threadManager.hpp"
 
-std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(const std::vector<Piece>& pieces, int numThreads, bool returnSolutions) {
-    //create thread arguments using vector<ThreadArgs>
 
-    //create threads, give them PuzzleSolver's thread_recursiveSolver method
+/*pthread_mutex_t myMutex;
     pthread_mutex_init(&myMutex,0);
         for (int i = 0; i < numThreads; ++i) {
             pthread_create(&(threads[i]), NULL, &thread_startup, (void*)(&(my_args[i])));
@@ -11,7 +9,16 @@ std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(c
         for (int i = 0; i < numThreads; ++i) {
             pthread_join(threads[i], NULL);
         }
-        pthread_mutex_destroy(&myMutex);
+        pthread_mutex_destroy(&myMutex);*/
+
+
+std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(const std::vector<Piece>& pieces, int numThreads, bool returnSolutions) {
+    //create thread arguments using vector<ThreadArgs>
+    
+
+
+    //create threads, give them PuzzleSolver's thread_recursiveSolver method
+    std::vector<pthread_t>
 
 
     //
