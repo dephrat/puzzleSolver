@@ -25,11 +25,8 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
                 removeFromGrid(orientation, row, col, symbol, true);
                 return false;
             }
-            
-        }  
-             
+        }      
     }
-    
     return true;
 }
 
@@ -72,15 +69,25 @@ const bool allowPartial) {
     }
 }
 
-//For now, this is the recursive function that handles all the execution. 
-//I may use this to create threads and move the recursive solving to another function later.
+//This version of the function will return all valid solutions
 // pieces: vector of all pieces to be fit in
 // depth: index of the piece that that iteration is trying to place
-//Requirement: depth must be positive
-bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth) {
-    if (depth == 8 || depth < 4) std::cout << depth << "\n";
+//Requirement: depth must be non-negative
+//Note: If numSolutions is negative, this function will return all possible solutions
+//Note: Here, the return value indicates whether we've reached our target numSolutions
+bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions, bool displaySolutions) {
     assert(depth >= 0);
-    if (depth >= pieces.size()) return true;
+    if (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) return true;
+    
+    //if the depth surpasses the number of pieces, then all pieces have been placed and we have a solution
+    if (depth >= pieces.size()) {
+        ++PuzzleSolver::solutionsFound;
+        if (displaySolutions)
+            PuzzleDisplay::displayGrid(grid);
+        //if we've found enough solutions, then we can stop
+        return numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions;
+    }
+
     //for each orientation of the current piece
     for (auto orientation : pieces[depth].orientations) {
         //for each square in the grid (should be accessible across recursive iterations, same grid)
@@ -90,19 +97,20 @@ bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int d
                 bool pieceFits = fitInGrid(orientation, row, col, pieces[depth].symbol);
                 if (pieceFits) {
                     //recurse with the next piece
-                    bool result = recursiveSolver(pieces, depth + 1);
-                    if (result) {
+                    bool result = recursiveSolver(pieces, depth + 1, numSolutions, displaySolutions);
+                    if (result) { //if it was successful, then we've found enough solutions and we can stop
                         return true;
                     } else {
                         removeFromGrid(orientation, row, col, pieces[depth].symbol);
                     }
-                    
                 }
             }
         }
     }
+    //if we reach this, then we haven't found enough valid solutions, so return false
     return false;
 }
+
 
 //Eliminates the need for recursion
 bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {

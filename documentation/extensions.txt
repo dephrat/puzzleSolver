@@ -1,0 +1,10 @@
+Most recently added: find-all, allows for specifying the number of solutions to search for
+
+Next up: solution-storage, every solution that's found gets added to an instance vector of solutions
+
+Future plans:
+add-pthreads, split up the initial grid into sections, have pthreads scan each section, use locks to
+    count total number of solutions found across threads, store solutions in each thread's PuzzleSolver
+    instance, merge the solutions into a final solutions vector, display the results
+    also remove display from recursiveSolver, maybe replace with storeSolutions
+pthread-depth, 
