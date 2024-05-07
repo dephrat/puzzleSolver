@@ -1,4 +1,7 @@
-Most recently added: find-all, allows for specifying the number of solutions to search for
+Completed:
+find-all, allows for specifying the number of solutions to search for
+
+Most recently added: 
 
 Next up: solution-storage, every solution that's found gets added to an instance vector of solutions
 
