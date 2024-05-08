@@ -1,12 +1,14 @@
-main.cpp: global.hpp piece.hpp pieceDefns.hpp puzzleDisplay.hpp puzzleSolver.hpp
+main.cpp: global.hpp piece.hpp pieceDefns.hpp puzzleDisplay.hpp puzzleSolver.hpp threadManager.hpp
 piece.cpp: piece.hpp
 pieceDefns.cpp: pieceDefns.hpp
 puzzleDisplay.cpp: puzzleDisplay.hpp
 puzzleSolver.cpp: puzzleSolver.hpp
+threadManager.cpp: threadManager.hpp
 
 global.hpp: none
 piece.hpp: none
 pieceDefns.hpp: none
 puzzleDisplay.hpp: global.hpp
-puzzleSolver.hpp: global.hpp piece.hpp puzzleDisplay.hpp
+puzzleSolver.hpp: global.hpp piece.hpp puzzleDisplay.hpp threadManager.hpp
+threadManager.hpp: piece.hpp puzzleSolver.hpp
 

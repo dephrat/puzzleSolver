@@ -5,6 +5,7 @@
 #include "global.hpp"
 #include "piece.hpp"
 #include "puzzleDisplay.hpp"
+#include "threadManager.hpp"
 
 class PuzzleSolver {
     std::vector<std::vector<char>> grid;
@@ -18,12 +19,14 @@ class PuzzleSolver {
     const bool allowPartial = false);
 
     public:
+    static inline int numSolutions = 1;
+
     bool nonRecursiveSolver(const std::vector<Piece>& pieces);
-    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions = 1, 
-    const bool displaySolutions = true, const bool storeSolutions = true);
-    bool thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions = 1, 
-    const bool displaySolutions = true, const bool storeSolutions = true);
-    const std::vector<std::vector<std::vector<char>>> &getSolutions() { return solutions; }
+    bool recursiveSolver(const std::vector<Piece>& pieces, const int depth,
+        const bool displaySolutions = true, const bool storeSolutions = true);
+    bool thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int start, 
+        const int end, const bool displaySolutions = true, const bool storeSolutions = true);
+    std::vector<std::vector<std::vector<char>>> &getSolutions() { return solutions; }
 
     PuzzleSolver(const char emptySymbol);
 };
