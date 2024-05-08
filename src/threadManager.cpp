@@ -15,44 +15,36 @@
 std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(const std::vector<Piece>& pieces, int numThreads, const bool returnSolutions, const char solverEmptySymbol) {
     std::vector<std::vector<std::vector<char>>> solutions;
     
-    if (numThreads < 1) {
+    if (numThreads < 1)
         throw std::runtime_error("Error: Tried to solve the puzzle with less than 1 thread");
-    }
-    
-    //create thread arguments using vector<ThreadArgs>
-    std::vector<PuzzleSolver> solvers(numThreads, '.');
-    int numSquares = gridHeight * gridWidth;
 
-    if (numSquares < 0) {
+    int numSquares = gridHeight * gridWidth;
+    if (numSquares < 0)
         throw std::runtime_error("Error: Somehow, the number of squares in the grid is negative");
-    }
 
     //If the grid has size 0x0, then just return no solutions. 
     //  (Technically if the pieces have no squares then they would "fit", but that's stupid)
-    if (numSquares == 0) {
+    if (numSquares == 0)
         return solutions;
-    }
 
     //Each thread must cover at least one square, so this removes excessive threads
-    if (numThreads > numSquares) {
+    if (numThreads > numSquares)
         numThreads = numSquares;
-    }
 
     //Either every thread can cover the same number of squares,
     // or the first few(?) threads cover 1 extra square. In either case, exactly numSquares squares are covered.
     int squaresPerThread = numSquares / numThreads;
     int remainder = numSquares - squaresPerThread * numThreads;
+    //the threads 0 to remainder-1 will cover squaresPerThread + 1 squares
+    //the remaining threads will cover squaresPerThread squares
     //I did some math to confirm this works for non-negative numSquares and positive numThreads.
     //I leave the proof as an exercise for the reader.
 
 
-    //the threads 0 to remainder-1 will cover squaresPerThread + 1 squares
-    //the remaining threads will cover squaresPerThread squares
-
-
+    //Create thread arguments
     std::vector<ThreadArgs> thread_args;
-    std::vector<pthread_t> threads;
-
+    std::vector<PuzzleSolver> solvers(numThreads, '.');
+    
     int start = 0;
     for (int i = 0; i < numThreads; ++i) {
         int end = start + squaresPerThread - 1; // squaresPerThread squares
@@ -60,13 +52,21 @@ std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(c
         thread_args.emplace_back(solvers[i], start, end);
         start = end + 1;
     }
-
-    if (start != numSquares) {
+    if (start != numSquares)
         throw std::runtime_error("Error: While creating thread arguments, we either don't assign all squares to threads or assign too many. Possible source of error is my math.");
-    }
 
     //create threads, give them PuzzleSolver's thread_recursiveSolver method
-    
+    std::vector<pthread_t> threads(numThreads);
+
+    pthread_mutex_t myMutex;
+    pthread_mutex_init(&myMutex,0);
+    for (int i = 0; i < numThreads; ++i) {
+        pthread_create(&(threads[i]), NULL, &thread_startup, (void*)(&(thread_args[i])));
+    }
+    for (int i = 0; i < numThreads; ++i) {
+        pthread_join(threads[i], NULL);
+    }
+    pthread_mutex_destroy(&myMutex);
 
 
 
