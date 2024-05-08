@@ -11,6 +11,7 @@
         }
         pthread_mutex_destroy(&myMutex);*/
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(const std::vector<Piece>& pieces, int numThreads, const bool returnSolutions, const char solverEmptySymbol) {
     std::vector<std::vector<std::vector<char>>> solutions;

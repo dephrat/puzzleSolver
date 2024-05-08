@@ -7,11 +7,12 @@
 
 class ThreadManager {
     struct ThreadArgs {
+        std::vector<Piece> pieces;
         PuzzleSolver &solver;
         int start;
         int end;
         
-        ThreadArgs(PuzzleSolver &ps, const int s, const int e) : solver(ps), start(s), end(e) {}
+        ThreadArgs(std::vector<Piece> &pcs, PuzzleSolver &ps, const int s, const int e) : pieces(pcs), solver(ps), start(s), end(e) {}
     };
 
     void *thread_startup(void *args);
