@@ -59,7 +59,7 @@ std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(c
     std::vector<pthread_t> threads(numThreads);
 
     pthread_mutex_t myMutex;
-    pthread_mutex_init(&myMutex,0);
+    pthread_mutex_init(&myMutex, 0);
     for (int i = 0; i < numThreads; ++i) {
         pthread_create(&(threads[i]), NULL, &thread_startup, (void*)(&(thread_args[i])));
     }
@@ -77,22 +77,30 @@ std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(c
     } else {
         //return some default small vector
     }
-
-
-
-    //let's say I create threads here and give them thread_recursiveSolver
-    //each thread runs thread_recursiveSolver, stores everything in their solver instance
-    //i join all the threads, but the solvers still exist? only if I pass them to the thread by reference
-
-    //use the solvers to create the return value if needed
-
-
-
-
-    //each solver instance contains the solutions found by the thread which used it
-    //the solver instance only exists within createSolverThreads, so perhaps optionally combine each
-    //  thread's solver instance's solutions into one big solver thread and display or return them
-
-    //
     
+}
+
+void *ThreadManager::thread_startup(void *args) {
+    using Time = std::chrono::steady_clock;
+    const auto timer_start = Time::now();
+
+    ThreadArgs *x = (ThreadArgs*)args;
+    auto solver = x->solver;
+    auto pieces = x->pieces;
+    auto start = x->start;
+    auto end = x->end;
+    bool res = solver.thread_recursiveSolver(pieces, 0, start, end);
+
+    const auto timer_end = Time::now();
+
+    pthread_mutex_lock(&myMutex);
+
+    PuzzleDisplay::displayGrid(solver.getGrid());
+    std::chrono::duration<double, std::milli> fp_ms = timer_end - timer_start;
+    std::cout << "Thread time taken (s): " << fp_ms.count()/1000 << std::endl;
+    std::cout << std::endl;
+
+    pthread_mutex_unlock(&myMutex);
+    pthread_exit(NULL);
+    return NULL;
 }

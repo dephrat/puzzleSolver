@@ -6,14 +6,15 @@
 #include "puzzleSolver.hpp"
 
 class ThreadManager {
-    class ThreadArgs {
+    struct ThreadArgs {
         PuzzleSolver &solver;
         int start;
         int end;
         
-        public:
         ThreadArgs(PuzzleSolver &ps, const int s, const int e) : solver(ps), start(s), end(e) {}
     };
+
+    void *thread_startup(void *args);
 
     public:
     std::vector<std::vector<std::vector<char>>> createSolverThreads(const std::vector<Piece>& pieces, 
