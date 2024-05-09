@@ -29,48 +29,6 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
     return true;
 }
 
-/*
-//Attempt to remove the specified piece from the grid at the specified location
-void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
-const bool allowPartial) {
-    if (allowPartial) {
-        //in this case, it's okay if only part of the orientation has been placed in the grid
-        for (int r = -2; r < 3; ++r) {
-            for (int c = -2; c < 3; ++c) {
-                //if out of bounds, continue
-                if (row+r < 0 || row+r >= grid.size() || col+c < 0 || col+c >= grid[0].size()) continue;
-                //else if we find our symbol, remove it
-                if (grid[row + r][col + c] == symbol) {
-                    if (orientation[r+2][c+2]) grid[row + r][col + c] = emptySymbol;
-                    else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid, 1)");
-                }
-            }         
-        }        
-    } else {
-        //in this case, the whole orientation must be found in the grid
-        size_t m = orientation.size();
-        size_t n = orientation[0].size();
-        for (int r = -2; r < 3; ++r) {     //design these loops so that
-            for (int c = -2; c < 3; ++c) { //we're always within orientation bounds!
-                assert(r+2 < m && c+2 < n);
-                bool inGridBounds = row+r >= 0 && row+r < gridHeight && col+c >= 0 && col+c < gridWidth;
-                bool inOrientation = orientation[r+2][c+2];
-                if (inGridBounds) {
-                    if (grid[row + r][col + c] == symbol) {
-                        if (inOrientation) grid[row + r][col + c] = emptySymbol;
-                        else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid, 2)");
-                    } else if (inOrientation) {
-                        throw std::runtime_error("Error: Unable to find piece square during full removal (removeFromGrid)");
-                    }
-                } else if (inOrientation) {
-                    throw std::runtime_error("Error: Tried full removal when part of the full piece would be out of bounds (removeFromGrid)");
-                }                
-            }
-        }
-    }
-}*/
-
-
 //Attempt to remove the specified piece from the grid at the specified location
 void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
 const bool allowPartial) {
