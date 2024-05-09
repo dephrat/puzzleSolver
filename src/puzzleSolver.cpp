@@ -4,10 +4,9 @@ PuzzleSolver::PuzzleSolver(const char emptySymbol) : emptySymbol(emptySymbol) {
     grid.resize(gridHeight, std::vector<char>(gridWidth, emptySymbol));
 }
 
-//Fit the piece in the grid at the specified spot if possible, returns false otherwise.
-//Currently inserts the piece by aligning the center of the 5x5 grid with the specified location. May need updates if I allow larger/unique pieces.
+//Attempt to fit the center of the piece into the grid at the specified location
 bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol) {
-    //go from -2 to +2 relative to center. This will have to be adjusted if we allow for more variety in piece sizes.
+    //go from -2 to +2 relative to center.
     //(-2, -2) is (currently) the posn of the top left corner of the orientation grid
     for (int r = -2; r < 3; ++r) {
         for (int c = -2; c < 3; ++c) {
@@ -30,6 +29,8 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
     return true;
 }
 
+/*
+//Attempt to remove the specified piece from the grid at the specified location
 void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
 const bool allowPartial) {
     if (allowPartial) {
@@ -67,9 +68,36 @@ const bool allowPartial) {
             }
         }
     }
+}*/
+
+
+//Attempt to remove the specified piece from the grid at the specified location
+void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
+const bool allowPartial) {
+    for (int r = -2; r < 3; ++r) {
+        for (int c = -2; c < 3; ++c) {
+            //current spot is within grid bounds
+            bool inGridBounds = row+r >= 0 && row+r < gridHeight && col+c >= 0 && col+c < gridWidth;
+            //current spot is a square in the piece
+            bool inOrientation = orientation[r+2][c+2];
+            if (inGridBounds) {
+                if (grid[row + r][col + c] == symbol) {
+                    if (inOrientation) grid[row + r][col + c] = emptySymbol;
+                    else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid)");
+                } else if (!allowPartial && inOrientation) {
+                    throw std::runtime_error("Error: Unable to find piece square during full removal (removeFromGrid)");
+                }
+            } 
+            else if (allowPartial) continue;
+            else if (inOrientation) {
+                throw std::runtime_error("Error: Attempted full removal when part of the full piece would be out of bounds (removeFromGrid)");
+            }
+        }
+    }
 }
 
-//This version of the function will return all valid solutions
+
+//Find solutions using the given pieces
 // pieces: vector of all pieces to be fit in
 // depth: index of the piece that that iteration is trying to place
 //Requirement: depth must be non-negative

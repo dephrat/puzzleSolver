@@ -3,37 +3,33 @@
 //might want to use helper functions. Validate, Create ThreadArgs, Create threads, Combine solutions, return
 std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(const std::vector<Piece>& pieces, int numThreads, const bool returnSolutions, const char solverEmptySymbol) {
     std::vector<std::vector<std::vector<char>>> solutions;
-    //Validation
-    if (numThreads < 1)
-        throw std::runtime_error("Error: Tried to solve the puzzle with less than 1 thread");
 
+    //Validation
     int numSquares = gridHeight * gridWidth;
     if (numSquares < 0)
         throw std::runtime_error("Error: Somehow, the number of squares in the grid is negative");
-
-    //If the grid has size 0x0, then just return no solutions. 
-    //  (Technically if the pieces have no squares then they would "fit", but that's stupid)
+    if (numThreads < 1)
+        throw std::runtime_error("Error: Tried to solve the puzzle with less than 1 thread");
+    //edge case, 0x0 grid has no solution (ignore possibility of empty pieces)
     if (numSquares == 0)
         return solutions;
-
-    //Each thread must cover at least one square, so this removes excessive threads
+    //remove excess threads
     if (numThreads > numSquares)
         numThreads = numSquares;
-
-    //Either every thread can cover the same number of squares,
-    // or the first few(?) threads cover 1 extra square. In either case, exactly numSquares squares are covered.
-    int squaresPerThread = numSquares / numThreads;
-    int remainder = numSquares - squaresPerThread * numThreads;
-    //the threads 0 to remainder-1 will cover squaresPerThread + 1 squares
-    //the remaining threads will cover squaresPerThread squares
-    //I did some math to confirm this works for non-negative numSquares and positive numThreads.
-    //I leave the proof as an exercise for the reader.
 
 
     //Create thread arguments
     std::vector<ThreadManager::ThreadArgs> thread_args;
+
+    //split up thread starts/ends based on how many squares they should cover
+    //threads 0 to remainder-1 will cover squaresPerThread + 1 squares
+    //the remaining threads will cover squaresPerThread squares
+    int squaresPerThread = numSquares / numThreads;
+    int remainder = numSquares - squaresPerThread * numThreads;
+    //I did some math to confirm this works for non-negative numSquares and positive numThreads.
+    //This works for non-negative numSquares and positive numThreads. 
+    //  I leave the proof as an exercise for the reader.
     std::vector<PuzzleSolver> solvers(numThreads, '.');
-    
     int start = 0;
     for (int i = 0; i < numThreads; ++i) {
         int end = start + squaresPerThread - 1; // squaresPerThread squares
@@ -62,8 +58,7 @@ std::vector<std::vector<std::vector<char>>> ThreadManager::createSolverThreads(c
             solutions.insert(solutions.end(), solution.begin(), solution.end());
         }
     }
-    return solutions;
-    
+    return solutions;   
 }
 
 void *ThreadManager::thread_startup(void *args) {

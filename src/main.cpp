@@ -11,7 +11,7 @@
 
 #define MULTITHREADING true
 #define NUM_THREADS 20
-#define NUM_SOLUTIONS 1000
+#define NUM_SOLUTIONS 1
 
 //Create PuzzleSolver, setup Pieces, run the solver, display the results
 int main() {
@@ -35,7 +35,7 @@ int main() {
     Piece redPiece(redPieceDefn, 'r');
     Piece purplePiece(purplePieceDefn, 'p');
     std::vector<Piece> pieces = 
-        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece};//, purplePiece};
+        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
 
     //Run the solver, time the attempt
     std::vector<std::vector<std::vector<char>>> solutions;

@@ -15,3 +15,4 @@ pthread-timer, add the ability to easily compare solving with pthreads vs withou
 readme, add proper README.md file
 benchmark, add more comprehensive benchmark capabilities (auto-run multiple times with/without multithreading, 
     auto-run with different thread counts, without multithreading)
+test-suite, add a bunch of tests to run on
