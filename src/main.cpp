@@ -44,8 +44,10 @@ int main() {
     try {
         const auto start = Time::now();
     #if MULTITHREADING
+        pthread_mutex_init(&ThreadManager::mutex, 0);
         ThreadManager tm;
         solutions = tm.createSolverThreads(pieces, NUM_THREADS);
+        pthread_mutex_destroy(&ThreadManager::mutex);
     #else
         solver.recursiveSolver(pieces, 0, false);
         solutions = solver.getSolutions();

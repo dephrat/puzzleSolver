@@ -1,3 +1,27 @@
+Now I'm adding a list of numbers of threads
+
+Call createSolverThreads, it creates the threads and gives them a startup function
+which starts them on solving the puzzle for their given squares
+
+when it comes time for the threads to recurse, currently they maintain single thread, they don't add
+new threads
+
+so now I can make it so that they actually do have new threads, so when they recurse they should
+call createSolverThreads for the children and then join them. Use the same ThreadManager possible?
+
+But then how do I reference it?
+
+I create ThreadManager when I want to call createSolverThreads
+
+The only member variable ThreadManager has is the mutex
+We want all threads in all recursion levels to use the same mutex
+But it's static, so they can all access it anyways, so access to the same mutex is possible
+regardless of how many ThreadManager instances I create
+If I call createSolverThreads multiple times, then I should probably move the mutex initialization and
+destruction out of the function
+
+
+
 pthreads
 
 
