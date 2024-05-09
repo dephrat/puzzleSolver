@@ -1,0 +1,20 @@
+pthreads
+
+
+does threadManager contain the threads? or does it make them and hold them?
+
+how to make and use threads:
+
+create the threads, give them a function, they run, join the threads, and we're done
+so we don't hold threads, we create them as needed
+
+We need a function to create the threads which call the recursive solver
+for each thread, create a puzzlesolver instance, and call the thread recursive solver
+
+create 10 threads, automatically split up the grid as needed
+run the solver using those threads, tell the thread manager to run the solver using the threads
+
+make the solutions vector static, protect the vector when we're adding stuff using a lock
+
+
+make a thread manager, gotta update include paths and makefile

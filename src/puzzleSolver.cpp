@@ -4,10 +4,9 @@ PuzzleSolver::PuzzleSolver(const char emptySymbol) : emptySymbol(emptySymbol) {
     grid.resize(gridHeight, std::vector<char>(gridWidth, emptySymbol));
 }
 
-//Fit the piece in the grid at the specified spot if possible, returns false otherwise.
-//Currently inserts the piece by aligning the center of the 5x5 grid with the specified location. May need updates if I allow larger/unique pieces.
+//Attempt to fit the center of the piece into the grid at the specified location
 bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol) {
-    //go from -2 to +2 relative to center. This will have to be adjusted if we allow for more variety in piece sizes.
+    //go from -2 to +2 relative to center.
     //(-2, -2) is (currently) the posn of the top left corner of the orientation grid
     for (int r = -2; r < 3; ++r) {
         for (int c = -2; c < 3; ++c) {
@@ -30,6 +29,8 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
     return true;
 }
 
+/*
+//Attempt to remove the specified piece from the grid at the specified location
 void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
 const bool allowPartial) {
     if (allowPartial) {
@@ -67,15 +68,42 @@ const bool allowPartial) {
             }
         }
     }
+}*/
+
+
+//Attempt to remove the specified piece from the grid at the specified location
+void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
+const bool allowPartial) {
+    for (int r = -2; r < 3; ++r) {
+        for (int c = -2; c < 3; ++c) {
+            //current spot is within grid bounds
+            bool inGridBounds = row+r >= 0 && row+r < gridHeight && col+c >= 0 && col+c < gridWidth;
+            //current spot is a square in the piece
+            bool inOrientation = orientation[r+2][c+2];
+            if (inGridBounds) {
+                if (grid[row + r][col + c] == symbol) {
+                    if (inOrientation) grid[row + r][col + c] = emptySymbol;
+                    else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid)");
+                } else if (!allowPartial && inOrientation) {
+                    throw std::runtime_error("Error: Unable to find piece square during full removal (removeFromGrid)");
+                }
+            } 
+            else if (allowPartial) continue;
+            else if (inOrientation) {
+                throw std::runtime_error("Error: Attempted full removal when part of the full piece would be out of bounds (removeFromGrid)");
+            }
+        }
+    }
 }
 
-//This version of the function will return all valid solutions
+
+//Find solutions using the given pieces
 // pieces: vector of all pieces to be fit in
 // depth: index of the piece that that iteration is trying to place
 //Requirement: depth must be non-negative
 //Note: If numSolutions is negative, this function will return all possible solutions
 //Note: Here, the return value indicates whether we've reached our target numSolutions
-bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int numSolutions, const bool displaySolutions, const bool storeSolutions) {
+bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int depth, const bool displaySolutions, const bool storeSolutions) {
     assert(depth >= 0);
     if (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) return true;
     
@@ -99,7 +127,7 @@ bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int d
                 bool pieceFits = fitInGrid(orientation, row, col, pieces[depth].symbol);
                 if (pieceFits) {
                     //recurse with the next piece
-                    bool result = recursiveSolver(pieces, depth + 1, numSolutions, displaySolutions);
+                    bool result = recursiveSolver(pieces, depth + 1, displaySolutions, storeSolutions);
                     if (result) { //if it was successful, then we've found enough solutions and we can stop
                         return true;
                     } else {
@@ -113,8 +141,60 @@ bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int d
     return false;
 }
 
+//Threaded version of recursiveSolver
+bool PuzzleSolver::thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, 
+const int start, const int end, const bool displaySolutions, const bool storeSolutions) {
+    assert(depth >= 0 && start >= 0 && end < gridHeight * gridWidth);
 
-//Eliminates the need for recursion
+    //if we've found enough solutions, then we can stop
+    pthread_mutex_lock(&ThreadManager::mutex);
+    bool ret = numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions;
+    pthread_mutex_unlock(&ThreadManager::mutex);
+    if (ret) return true;
+    
+    //if the depth surpasses the number of pieces, then all pieces have been placed and we have a solution
+    if (depth >= pieces.size()) {
+        pthread_mutex_lock(&ThreadManager::mutex);
+        ++PuzzleSolver::solutionsFound;
+        if (displaySolutions)
+            PuzzleDisplay::displayGrid(grid);
+        if (storeSolutions){
+            solutions.push_back(grid);
+        }
+        
+        //if we've found enough solutions, then we can stop
+        bool ret = numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions;
+        pthread_mutex_unlock(&ThreadManager::mutex);
+
+        return ret;
+    }
+
+    //for each orientation of the current piece
+    for (auto orientation : pieces[depth].orientations) {
+        //for each square in the grid (should be accessible across recursive iterations, same grid)
+        for (int square = start; square <= end; ++square) {
+            int row = square / gridWidth;
+            int col = square % gridHeight;
+            
+            //try to fit the current piece
+            bool pieceFits = fitInGrid(orientation, row, col, pieces[depth].symbol);
+            if (pieceFits) {
+                //recurse with the next piece
+                bool result = thread_recursiveSolver(pieces, depth + 1, 0, gridHeight * gridWidth - 1, 
+                    displaySolutions, storeSolutions);
+                if (result) { //if it was successful, then we've found enough solutions and we can stop
+                    return true;
+                } else {
+                    removeFromGrid(orientation, row, col, pieces[depth].symbol);
+                }
+            }
+        }
+    }
+    //if we reach this, then we haven't found enough valid solutions, so return false
+    return false;
+}
+
+//Eliminates the need for recursion, but seems to be much slower
 bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {
     std::vector<std::pair<int, int>> locationTracker(pieces.size(), std::make_pair(0, 0)); //If unplaced, stores the next square to be tried. If placed, this is the square of the piece.
     std::vector<int> orientationTracker(pieces.size(), 0); //Stores which orientation each piece is on
@@ -177,9 +257,5 @@ bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {
         } else {
             return false;
         }
-        
-        
-        
-        
     }
 }
