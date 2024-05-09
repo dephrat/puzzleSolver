@@ -2,6 +2,7 @@
 
 #include <pthread.h>
 #include <vector>
+#include "global.hpp"
 #include "piece.hpp"
 #include "puzzleSolver.hpp"
 
@@ -11,10 +12,13 @@ class ThreadManager {
     struct ThreadArgs {
         std::vector<Piece> pieces;
         PuzzleSolver &solver;
+        int depth;
         int start;
         int end;
+        int &finished;
         
-        ThreadArgs(const std::vector<Piece> &pcs, PuzzleSolver &ps, const int s, const int e) : pieces(pcs), solver(ps), start(s), end(e) {}
+        ThreadArgs(const std::vector<Piece> &pcs, PuzzleSolver &ps, const int d, const int s, const int e, int &f)
+        : pieces(pcs), solver(ps), depth(d), start(s), end(e), finished(f) {}
     };
 
     static void *thread_startup(void *args);
@@ -22,8 +26,5 @@ class ThreadManager {
     public:
     static inline pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-    std::vector<std::vector<std::vector<char>>> createSolverThreads(const std::vector<Piece>& pieces, 
-    int numThreads, const bool returnSolutions = true, const char solverEmptySymbol = '.');
-
-    ThreadManager() {}
+    static bool createSolverThreads(const std::vector<std::vector<char>> &grid, const std::vector<Piece>& pieces, const int depth, int numThreads);
 };

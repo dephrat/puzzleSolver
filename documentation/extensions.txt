@@ -10,9 +10,20 @@ Next up: pthread-depth, specify depth for thread splitting for all depths. imple
     pass to solver alongside pieces vector
 
 Future plans:
+pthread-depth, decide whether to replace all instances of numSolutions and numThreads with the global macro
+pthread-depth, double check that all function calls use the right parameters
+pthread-depth, analyze where I should put the check within thread_recursiveSolver for whether it's 
+    reached a sufficient number of solutions, base it on the impact it has on the performance.
+    benchmark update will be useful for this
+eliminate-final-recursion, potentially add a check if you've just placed the last piece, so that
+    instead of recursing, you just do the finished logic right there in the same iteration
+    no need to reach depth 9, just detect that depth 8 == pieces.size() - 1 and that we've just 
+    successfully put the last piece down.
 pthread-timer, add the ability to easily compare solving with pthreads vs without. possible use a flag
     using macros or something to enable/disable multithreading
 readme, add proper README.md file
 benchmark, add more comprehensive benchmark capabilities (auto-run multiple times with/without multithreading, 
     auto-run with different thread counts, without multithreading)
 test-suite, add a bunch of tests to run on
+bottleneck-identifier, figure out how to add functionality that gives information on how much time/power
+    is spent on different parts of the program/code, so that I can identify bottlenecks

@@ -11,7 +11,7 @@ puzzleSolver: $(OBJ_DIR)/main.o $(OBJ_DIR)/piece.o $(OBJ_DIR)/pieceDefns.o $(OBJ
 $(OBJ_DIR)/main.o: src/main.cpp include/global.hpp include/piece.hpp include/pieceDefns.hpp include/puzzleDisplay.hpp include/puzzleSolver.hpp include/threadManager.hpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c src/main.cpp -o $(OBJ_DIR)/main.o
 
-$(OBJ_DIR)/piece.o: include/piece.hpp src/piece.cpp | $(OBJ_DIR)
+$(OBJ_DIR)/piece.o: include/piece.hpp src/piece.cpp include/global.hpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c src/piece.cpp -o $(OBJ_DIR)/piece.o
 
 $(OBJ_DIR)/pieceDefns.o: include/pieceDefns.hpp src/pieceDefns.cpp | $(OBJ_DIR)
@@ -23,7 +23,7 @@ $(OBJ_DIR)/puzzleDisplay.o: include/puzzleDisplay.hpp src/puzzleDisplay.cpp incl
 $(OBJ_DIR)/puzzleSolver.o: include/puzzleSolver.hpp src/puzzleSolver.cpp include/global.hpp include/piece.hpp include/puzzleDisplay.hpp include/threadManager.hpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c src/puzzleSolver.cpp -o $(OBJ_DIR)/puzzleSolver.o
 
-$(OBJ_DIR)/threadManager.o: include/threadManager.hpp src/threadManager.cpp include/piece.hpp include/puzzleSolver.hpp | $(OBJ_DIR)
+$(OBJ_DIR)/threadManager.o: include/threadManager.hpp src/threadManager.cpp include/global.hpp include/piece.hpp include/puzzleSolver.hpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c src/threadManager.cpp -o $(OBJ_DIR)/threadManager.o
 
 $(OBJ_DIR):

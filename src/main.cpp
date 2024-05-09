@@ -9,19 +9,13 @@
 #include "puzzleSolver.hpp"
 #include "threadManager.hpp"
 
-#define MULTITHREADING true
-#define NUM_THREADS 20
-#define NUM_SOLUTIONS 1
-
 //Create PuzzleSolver, setup Pieces, run the solver, display the results
 int main() {
     //Create PuzzleSolver
-    PuzzleSolver::numSolutions = NUM_SOLUTIONS;
-    char emptySymbol = '.';
-    PuzzleSolver solver(emptySymbol);
+    PuzzleSolver solver;
 
     //Setup Pieces
-    //When assigning symbols to pieces, don't use the emptySymbol.
+    //When assigning symbols to pieces, don't use EMPTY_SYMBOL (found in global.hpp)
     Piece orangePiece(orangePieceDefn, 'o');
     Piece orangePiece2(orangePieceDefn, '2');
     Piece orangePiece3(orangePieceDefn, '3');
@@ -38,19 +32,18 @@ int main() {
         {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
 
     //Run the solver, time the attempt
-    std::vector<std::vector<std::vector<char>>> solutions;
     using Time = std::chrono::steady_clock;
     std::chrono::duration<double, std::milli> fp_ms;
     try {
         const auto start = Time::now();
     #if MULTITHREADING
         pthread_mutex_init(&ThreadManager::mutex, 0);
-        ThreadManager tm;
-        solutions = tm.createSolverThreads(pieces, NUM_THREADS);
+        PuzzleSolver solver;
+        ThreadManager::createSolverThreads(solver.getGrid(), pieces, 0, NUM_THREADS);
         pthread_mutex_destroy(&ThreadManager::mutex);
     #else
         solver.recursiveSolver(pieces, 0, false);
-        solutions = solver.getSolutions();
+        //solutions = solver.getSolutions();
     #endif
         //bool result = solver.nonRecursiveSolver(pieces);
         const auto end = Time::now();
@@ -60,13 +53,8 @@ int main() {
     }
 
     //Display the results
-    #if MULTITHREADING
-    PuzzleDisplay::displaySolutions(solutions);
-    #else
-    PuzzleDisplay::displaySolutions(solver.getSolutions());
-    #endif
-    std::cout << solutions.size() << std::endl;
-
+    PuzzleDisplay::displaySolutions(PuzzleSolver::solutions);
+    std::cout << PuzzleSolver::solutions.size() << std::endl;
     std::cout << "Time taken (s): " << fp_ms.count()/1000 << std::endl;   
 }
 
