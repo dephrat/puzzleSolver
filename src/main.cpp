@@ -29,23 +29,23 @@ int main() {
     Piece redPiece(redPieceDefn, 'r');
     Piece purplePiece(purplePieceDefn, 'p');
     std::vector<Piece> pieces = 
-        {orangePiece, cyanPiece, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece, purplePiece};
+        {orangePiece, cyanPiece};//, bluePiece, pinkPiece, yellowPiece, greenPiece, limePiece, redPiece};//, purplePiece};
 
     //Run the solver, time the attempt
     using Time = std::chrono::steady_clock;
     std::chrono::duration<double, std::milli> fp_ms;
     try {
         const auto start = Time::now();
-    #if MULTITHREADING
-        pthread_mutex_init(&ThreadManager::mutex, 0);
-        PuzzleSolver solver;
-        ThreadManager::createSolverThreads(solver.getGrid(), pieces, 0, NUM_THREADS);
-        pthread_mutex_destroy(&ThreadManager::mutex);
-    #else
-        solver.recursiveSolver(pieces, 0, false);
-        //solutions = solver.getSolutions();
-    #endif
-        //bool result = solver.nonRecursiveSolver(pieces);
+        #if MULTITHREADING
+            pthread_mutex_init(&ThreadManager::mutex, 0);
+            PuzzleSolver solver;
+            ThreadManager::createSolverThreads(solver.getGrid(), pieces, 0, thread_countPerDepth[0]);
+            pthread_mutex_destroy(&ThreadManager::mutex);
+        #else
+            solver.recursiveSolver(pieces, 0, false);
+            //bool result = solver.nonRecursiveSolver(pieces);
+        #endif
+        
         const auto end = Time::now();
         fp_ms = end - start;
     } catch (const std::runtime_error &error) {
@@ -55,6 +55,7 @@ int main() {
     //Display the results
     PuzzleDisplay::displaySolutions(PuzzleSolver::solutions);
     std::cout << PuzzleSolver::solutions.size() << std::endl;
-    std::cout << "Time taken (s): " << fp_ms.count()/1000 << std::endl;   
+    std::cout << "Time taken (s): " << fp_ms.count()/1000 << std::endl;
+
 }
 

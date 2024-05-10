@@ -24,8 +24,11 @@ class PuzzleSolver {
         const bool displaySolutions = true, const bool storeSolutions = true);
     void thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, const int start, 
     const int end, int& finished);
+    void removeDuplicateSolutions();
     const std::vector<std::vector<char>> &getGrid() { return grid; }
     static int getSolutionsFound() { return solutionsFound; }
+    
+    
 
     PuzzleSolver();
     PuzzleSolver(const std::vector<std::vector<char>> &g) : grid(g) {}

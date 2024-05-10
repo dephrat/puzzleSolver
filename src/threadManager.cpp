@@ -15,7 +15,6 @@ bool ThreadManager::createSolverThreads(const std::vector<std::vector<char>> &gr
     if (numThreads > numSquares)
         numThreads = numSquares;
 
-
     //Create thread arguments
     std::vector<ThreadManager::ThreadArgs> thread_args;
 
@@ -27,8 +26,7 @@ bool ThreadManager::createSolverThreads(const std::vector<std::vector<char>> &gr
     //I did some math to confirm this works for non-negative numSquares and positive numThreads.
     //This works for non-negative numSquares and positive numThreads. 
     //  I leave the proof as an exercise for the reader.
-
-
+    
     std::vector<PuzzleSolver> solvers(numThreads, PuzzleSolver(grid));
     std::vector<int> finished(numThreads, 0);
     int start = 0;
@@ -45,10 +43,9 @@ bool ThreadManager::createSolverThreads(const std::vector<std::vector<char>> &gr
     std::vector<pthread_t> threads(numThreads);
 
     for (int i = 0; i < numThreads; ++i)
-        pthread_create(&(threads[i]), NULL, &thread_startup, static_cast<void*>(&thread_args[i]));
+        pthread_create(&(threads[i]), NULL, &thread_startup, static_cast<void*>(&thread_args[i]));    
     for (int i = 0; i < numThreads; ++i)
         pthread_join(threads[i], NULL);
-
     //if any of the threads say they're finished, then we got enough solutions and we can stop 
     for (auto thread_arg : thread_args) {
         if (thread_arg.finished == 1) {

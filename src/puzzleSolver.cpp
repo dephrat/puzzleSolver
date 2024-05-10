@@ -138,7 +138,14 @@ const int start, const int end, int& finished) {
                 //thread_recursiveSolver(pieces, depth + 1, 0, gridHeight * gridWidth - 1, finished);
                 
                 //allow for specifying however many threads! pass in a thread_depth vector or something!
-                finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, NUM_THREADS)) ? 1 : 0;
+
+
+
+                //finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, NUM_THREADS)) ? 1 : 0;
+                finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, thread_countPerDepth[depth + 1])) ? 1 : 0;
+
+
+
                 if (finished == 1) { //if it was successful, then we've found enough solutions and we can stop
                     return;
                 } else {
@@ -215,4 +222,8 @@ bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {
             return false;
         }
     }
+}
+
+void PuzzleSolver::removeDuplicateSolutions() {
+    
 }
