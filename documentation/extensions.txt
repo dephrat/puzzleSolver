@@ -12,16 +12,16 @@ add-pthreads, split up the initial grid into sections, have pthreads scan each s
     also remove display from recursiveSolver, maybe replace with storeSolutions
 pthread-depth/pthread-timer, add the ability to easily compare solving with pthreads vs without. possible use a flag
     using macros or something to enable/disable multithreading
-
-Next up: pthread-depth, specify depth for thread splitting for all depths. implement as vector of ints,
+pthread-depth, specify depth for thread splitting for all depths. implement as vector of ints,
     pass to solver alongside pieces vector
+
+Next up: pthread-depth, potentially say that if thread_countPerDepth[depth+1] == 1 then don't bother creating
+    another thread and just recurse using the current thread, thus reducing overhead
 
 Future plans:
 thread-arg-creation, abstract thread arg creation (using inline function), one option is to split threads
     by square coverage like I currently do, another option is to first split by orientation, then by
     threads. I think by orientation will be faster, but benchmarking should allow me to check
-pthread-depth, potentially say that if thread_countPerDepth[depth+1] == 1 then don't bother creating
-    another thread and just recurse using the current thread, thus reducing overhead
 pthread-depth, decide whether to replace all instances of numSolutions and numThreads with the global macro
 pthread-depth, double check that all function calls use the right parameters
 pthread-depth, analyze where I should put the check within thread_recursiveSolver for whether it's 

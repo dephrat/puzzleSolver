@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <vector>
 
-#define MULTITHREADING true
-#define NUM_SOLUTIONS 3996300
+#define MULTITHREADING false
+#define NUM_SOLUTIONS 100000
 #define EMPTY_SYMBOL '.'
 
 constexpr size_t gridWidth = 10;
@@ -17,4 +17,4 @@ constexpr size_t numSquares = gridWidth * gridHeight;
 //constexpr std::array<int,11> thread_countPerDepth {3,5,3,3,3,3,3,1,1,1,-1};
 //constexpr std::array<int,11> thread_countPerDepth {1,1,1,1,1,1,1,1,1, -1};
 
-constexpr std::array<int,11> thread_countPerDepth {1,10,1,1,1,1,1,1,1,1,1};
+constexpr std::array<int,11> thread_countPerDepth {2,2,2,1,1,1,1,1,1,1,1};
