@@ -68,7 +68,9 @@ void *ThreadManager::thread_startup(void *args) {
     auto start = x->start;
     auto end = x->end;
     int &finished = x->finished;
+    
     solver.thread_recursiveSolver(pieces, depth, start, end, finished);
+    
     pthread_exit(NULL);
     return NULL;
 }

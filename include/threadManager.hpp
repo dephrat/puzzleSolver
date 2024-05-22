@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pthread.h>
+#include <unordered_map>
 #include <vector>
 #include "global.hpp"
 #include "piece.hpp"

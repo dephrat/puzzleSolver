@@ -134,22 +134,27 @@ const int start, const int end, int& finished) {
             //try to fit the current piece
             bool pieceFits = fitInGrid(orientation, row, col, pieces[depth].symbol);
             if (pieceFits) {
-                //recurse with the next piece
-                //thread_recursiveSolver(pieces, depth + 1, 0, gridHeight * gridWidth - 1, finished);
-                
-                //allow for specifying however many threads! pass in a thread_depth vector or something!
+                if (depth < pieces.size() - 1) { //we have more pieces to place for a solution
+                    //recurse with the next piece
+                    finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, thread_countPerDepth[depth + 1])) ? 1 : 0;
+                    if (finished == 1) { //if it was successful, then we've found enough solutions and we can stop
+                        return;
+                    } else {
+                        removeFromGrid(orientation, row, col, pieces[depth].symbol, false);
+                    }
+                } else { //we've found a solution, do processing here to avoid duplicate solutions
+                    pthread_mutex_lock(&ThreadManager::mutex);
+                    ++PuzzleSolver::solutionsFound;
+                    PuzzleSolver::solutions.push_back(grid);
 
-
-
-                //finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, NUM_THREADS)) ? 1 : 0;
-                finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, thread_countPerDepth[depth + 1])) ? 1 : 0;
-
-
-
-                if (finished == 1) { //if it was successful, then we've found enough solutions and we can stop
-                    return;
-                } else {
-                    removeFromGrid(orientation, row, col, pieces[depth].symbol, false);
+                    //if we've found enough solutions, then pass on the message that we should stop
+                    finished = (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) ? 1 : 0;
+                    pthread_mutex_unlock(&ThreadManager::mutex);
+                    if (finished == 1) { 
+                        return;
+                    } else {
+                        removeFromGrid(orientation, row, col, pieces[depth].symbol, false);
+                    }
                 }
             }
         }
@@ -225,5 +230,6 @@ bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {
 }
 
 void PuzzleSolver::removeDuplicateSolutions() {
+    //radix sort
     
 }
