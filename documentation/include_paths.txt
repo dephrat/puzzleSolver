@@ -6,9 +6,9 @@ puzzleSolver.cpp: puzzleSolver.hpp
 threadManager.cpp: threadManager.hpp
 
 global.hpp: none
-piece.hpp: none
+piece.hpp: global.hpp
 pieceDefns.hpp: none
 puzzleDisplay.hpp: global.hpp
 puzzleSolver.hpp: global.hpp piece.hpp puzzleDisplay.hpp threadManager.hpp
-threadManager.hpp: piece.hpp puzzleSolver.hpp
+threadManager.hpp: global.hpp piece.hpp puzzleSolver.hpp
 

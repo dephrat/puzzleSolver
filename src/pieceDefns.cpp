@@ -87,3 +87,13 @@ std::vector<std::vector<bool>> purplePieceDefn = {
         {0,0,0,1,0}
     }
 };
+
+std::vector<std::vector<bool>> hugePieceDefn = {
+    {
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1}
+    }
+};

@@ -5,6 +5,10 @@
 #include "piece.hpp"
 
 Piece::Piece(const std::vector<std::vector<bool>>& pieceDefn, char s, bool removeDuplicates) : symbol(s) {
+    if (s == EMPTY_SYMBOL) {
+        throw std::runtime_error("Error: Tried to give piece the empty symbol");
+    }
+    
     //Add piece defn to vector
     orientations.push_back(pieceDefn);
 
@@ -146,7 +150,7 @@ void Piece::displayOrientation(int orientationIndex) {
     auto orientation = orientations[orientationIndex];
     for (auto row : orientation) {
         for (int col : row) {
-            std::cout << (col ? symbol : '.') << " ";
+            std::cout << (col ? symbol : EMPTY_SYMBOL) << " ";
         }
         std::cout << "\n";
     }

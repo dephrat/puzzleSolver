@@ -1,3 +1,8 @@
+Legend:
+[branch-name]-optimization, these branches modify functionality inside optimization mode
+[branch-name]-fun, these branches add features that don't relate to core functionality
+[branch1-name]/[branch2-name], these features were planned for branch2 but added during branch1
+
 Completed:
 find-all, allows for specifying the number of solutions to search for
     solution-storage, every solution that's found gets added to an instance vector of solutions
@@ -5,14 +10,45 @@ add-pthreads, split up the initial grid into sections, have pthreads scan each s
     count total number of solutions found across threads, store solutions in each thread's PuzzleSolver
     instance, merge the solutions into a final solutions vector, display the results
     also remove display from recursiveSolver, maybe replace with storeSolutions
+pthread-depth/pthread-timer, add the ability to easily compare solving with pthreads vs without. possible use a flag
+    using macros or something to enable/disable multithreading
 
 Next up: pthread-depth, specify depth for thread splitting for all depths. implement as vector of ints,
     pass to solver alongside pieces vector
 
 Future plans:
-pthread-timer, add the ability to easily compare solving with pthreads vs without. possible use a flag
-    using macros or something to enable/disable multithreading
+thread-arg-creation, abstract thread arg creation (using inline function), one option is to split threads
+    by square coverage like I currently do, another option is to first split by orientation, then by
+    threads. I think by orientation will be faster, but benchmarking should allow me to check
+pthread-depth, potentially say that if thread_countPerDepth[depth+1] == 1 then don't bother creating
+    another thread and just recurse using the current thread, thus reducing overhead
+pthread-depth, decide whether to replace all instances of numSolutions and numThreads with the global macro
+pthread-depth, double check that all function calls use the right parameters
+pthread-depth, analyze where I should put the check within thread_recursiveSolver for whether it's 
+    reached a sufficient number of solutions, base it on the impact it has on the performance.
+    benchmark update will be useful for this
+pthread-pooling, do some research on whether thread pooling would help speed things up, implement
+    if yes
+eliminate-final-recursion, potentially add a check if you've just placed the last piece, so that
+    instead of recursing, you just do the finished logic right there in the same iteration
+    no need to reach depth 9, just detect that depth 8 == pieces.size() - 1 and that we've just 
+    successfully put the last piece down.
 readme, add proper README.md file
 benchmark, add more comprehensive benchmark capabilities (auto-run multiple times with/without multithreading, 
     auto-run with different thread counts, without multithreading)
 test-suite, add a bunch of tests to run on
+bottleneck-identifier, figure out how to add functionality that gives information on how much time/power
+    is spent on different parts of the program/code, so that I can identify bottlenecks
+debug-mode, adds debugging. I'm thinking of adding checks for duplicate solutions here because that's 
+    happened already, but can also include other validation
+mode-optimization, adds a toggleable mode for optimization, I can use a macro in global.hpp
+grid-bounds-optimization, while checking outside grid bounds, each piece defines a box
+    such that when we do grid bounds checking using the piece, we just check the box instead of each
+    square in the piece. (only works for grid bounds checking, still need to compare per square to see
+    whether it fits into the grid wrt other pieces)
+text-me-fun, add option to send me a text message when the program completes
+randomize-piece-order, exactly what it sounds like, useful for testing/benchmarking. ideally want a way to
+    preserve particular orderings to test them both with multithreading and without
+thread-count-optimization, add thread count optimizations, update them live during processing,
+    perhaps use a heuristic such as "number of solutions found at each level" to determine whether to 
+    increase/decrease the thread count at each level

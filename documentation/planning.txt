@@ -1,3 +1,76 @@
+So main calls ThreadManager::createSolverThreads(pieces, depth, numThreads);
+createSolverThreads creates vector<ThreadArgs> using 
+    thread_args.emplace_back(pieces, solvers[i], depth, start, end, finished[i]);
+createSolverThreads then creates and passes threads and args to ThreadManager::thread_startup
+thread_startup extracts the thread_args and calls 
+    solver.thread_recursiveSolver(pieces, depth, start, end, finished)
+thread_recursiveSolver checks if we've placed all pieces, in which case we add our solution to
+    PuzzleSolver::solutions, update PuzzleSolver::solutionsFound, update finished, and return,
+    otherwise updates finished based on whether we've found enough solutions and returns if we have.
+    then it checks every way to fit the current piece/orientation into the grid, and every time it's 
+    successful it updates finished using the return value of 
+    ThreadManager::createSolverThreads(pieces, depth+1, numThreads),
+    returning if finished is true and removing the piece to continue otherwise
+
+after createSolverThreads creates the threads it waits for them all to finish, then it takes the
+    finished value for each thread and if any of them are true, (does a quick check and then) it
+    returns true
+
+
+
+
+
+Now I'm adding a list of numbers of threads
+
+Call createSolverThreads, it creates the threads and gives them a startup function
+which starts them on solving the puzzle for their given squares
+
+when it comes time for the threads to recurse, currently they maintain single thread, they don't add
+new threads
+
+so now I can make it so that they actually do have new threads, so when they recurse they should
+call createSolverThreads for the children and then join them. Use the same ThreadManager possible?
+
+But then how do I reference it?
+
+I create ThreadManager when I want to call createSolverThreads
+
+The only member variable ThreadManager has is the mutex
+We want all threads in all recursion levels to use the same mutex
+But it's static, so they can all access it anyways, so access to the same mutex is possible
+regardless of how many ThreadManager instances I create
+If I call createSolverThreads multiple times, then I should probably move the mutex initialization and
+destruction out of the function
+
+
+If I want to call createSolverThreads inside thread_recursiveSolver, then I need a TM instance,
+unless I make the function static.
+
+okay now the function is static, so I can call it anywhere without needing to create instances.
+The only member variable in ThreadManager is a static inline mutex which is initialized, so I don't 
+have to worry about threads needing access to ThreadManager instance variables
+
+Heck, everything in ThreadManager is static. I think I'll keep it that way, it's working nicely so far
+
+So now, to use createSolverThreads, I can just call the static function. Also, I learned by accident
+that at the very least, the C++ error checker I'm using in VSCode doesn't yell at you if you (call a
+static function from an instance of the class as though the function were non-static)
+
+The plan goes, inside PuzzleSolver's thread_recursiveSolver, when it's time to recurse,
+I call ThreadManager::createSolverThreads. They then create the threads, create new args for them,
+and run the threads on thread_recursiveSolver.
+
+Level 1 creates (perhaps) 8 level 2 threads. They all finish, then level 1 moves its piece to the next
+square, and then creates the threads again. If I create the solver threads through createSolverThreads 
+as it currently is, then it'll recreate the thread id vector, as well as all the solvers and other
+args. 
+
+
+
+Store this stuff in the static "box", the PuzzleSolver's static solutions vector
+
+
+
 pthreads
 
 

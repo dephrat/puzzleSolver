@@ -1,7 +1,7 @@
 #include "puzzleSolver.hpp"
 
-PuzzleSolver::PuzzleSolver(const char emptySymbol) : emptySymbol(emptySymbol) {
-    grid.resize(gridHeight, std::vector<char>(gridWidth, emptySymbol));
+PuzzleSolver::PuzzleSolver() {
+    grid.resize(gridHeight, std::vector<char>(gridWidth, EMPTY_SYMBOL));
 }
 
 //Attempt to fit the center of the piece into the grid at the specified location
@@ -16,11 +16,11 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
                 return false;
             }
             char current = grid[row + r][col + c];
-            if (current == symbol) {
+            if (current == symbol)
                 throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (fitInGrid)"); 
-            } else if (current == emptySymbol) {
+            else if (current == EMPTY_SYMBOL)
                 grid[row + r][col + c] = symbol;
-            } else {
+            else {
                 removeFromGrid(orientation, row, col, symbol, true);
                 return false;
             }
@@ -28,48 +28,6 @@ bool PuzzleSolver::fitInGrid(const std::vector<std::vector<bool>> &orientation, 
     }
     return true;
 }
-
-/*
-//Attempt to remove the specified piece from the grid at the specified location
-void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
-const bool allowPartial) {
-    if (allowPartial) {
-        //in this case, it's okay if only part of the orientation has been placed in the grid
-        for (int r = -2; r < 3; ++r) {
-            for (int c = -2; c < 3; ++c) {
-                //if out of bounds, continue
-                if (row+r < 0 || row+r >= grid.size() || col+c < 0 || col+c >= grid[0].size()) continue;
-                //else if we find our symbol, remove it
-                if (grid[row + r][col + c] == symbol) {
-                    if (orientation[r+2][c+2]) grid[row + r][col + c] = emptySymbol;
-                    else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid, 1)");
-                }
-            }         
-        }        
-    } else {
-        //in this case, the whole orientation must be found in the grid
-        size_t m = orientation.size();
-        size_t n = orientation[0].size();
-        for (int r = -2; r < 3; ++r) {     //design these loops so that
-            for (int c = -2; c < 3; ++c) { //we're always within orientation bounds!
-                assert(r+2 < m && c+2 < n);
-                bool inGridBounds = row+r >= 0 && row+r < gridHeight && col+c >= 0 && col+c < gridWidth;
-                bool inOrientation = orientation[r+2][c+2];
-                if (inGridBounds) {
-                    if (grid[row + r][col + c] == symbol) {
-                        if (inOrientation) grid[row + r][col + c] = emptySymbol;
-                        else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid, 2)");
-                    } else if (inOrientation) {
-                        throw std::runtime_error("Error: Unable to find piece square during full removal (removeFromGrid)");
-                    }
-                } else if (inOrientation) {
-                    throw std::runtime_error("Error: Tried full removal when part of the full piece would be out of bounds (removeFromGrid)");
-                }                
-            }
-        }
-    }
-}*/
-
 
 //Attempt to remove the specified piece from the grid at the specified location
 void PuzzleSolver::removeFromGrid(const std::vector<std::vector<bool>> &orientation, const int row, const int col, const char symbol, 
@@ -82,7 +40,7 @@ const bool allowPartial) {
             bool inOrientation = orientation[r+2][c+2];
             if (inGridBounds) {
                 if (grid[row + r][col + c] == symbol) {
-                    if (inOrientation) grid[row + r][col + c] = emptySymbol;
+                    if (inOrientation) grid[row + r][col + c] = EMPTY_SYMBOL;
                     else throw std::runtime_error("Error: Detected unexpected occurrence of current symbol, possibly a repeat usage in piece definitions (removeFromGrid)");
                 } else if (!allowPartial && inOrientation) {
                     throw std::runtime_error("Error: Unable to find piece square during full removal (removeFromGrid)");
@@ -142,31 +100,28 @@ bool PuzzleSolver::recursiveSolver(const std::vector<Piece>& pieces, const int d
 }
 
 //Threaded version of recursiveSolver
-bool PuzzleSolver::thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, 
-const int start, const int end, const bool displaySolutions, const bool storeSolutions) {
-    assert(depth >= 0 && start >= 0 && end < gridHeight * gridWidth);
+void PuzzleSolver::thread_recursiveSolver(const std::vector<Piece>& pieces, const int depth, 
+const int start, const int end, int& finished) {
+    assert(depth >= 0 && start >= 0 && end < numSquares);
 
-    //if we've found enough solutions, then we can stop
-    pthread_mutex_lock(&ThreadManager::mutex);
-    bool ret = numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions;
-    pthread_mutex_unlock(&ThreadManager::mutex);
-    if (ret) return true;
-    
     //if the depth surpasses the number of pieces, then all pieces have been placed and we have a solution
     if (depth >= pieces.size()) {
         pthread_mutex_lock(&ThreadManager::mutex);
         ++PuzzleSolver::solutionsFound;
-        if (displaySolutions)
-            PuzzleDisplay::displayGrid(grid);
-        if (storeSolutions){
-            solutions.push_back(grid);
-        }
-        
-        //if we've found enough solutions, then we can stop
-        bool ret = numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions;
-        pthread_mutex_unlock(&ThreadManager::mutex);
+        PuzzleSolver::solutions.push_back(grid);
 
-        return ret;
+        //if we've found enough solutions, then pass on the message that we should stop
+        finished = (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) ? 1 : 0;
+        pthread_mutex_unlock(&ThreadManager::mutex);
+        //either way, return to higher level of recursion
+        return;
+    } else {
+        //if we've found enough solutions, then we can stop
+        pthread_mutex_lock(&ThreadManager::mutex);
+        finished = (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) ? 1 : 0;
+        pthread_mutex_unlock(&ThreadManager::mutex);
+        if (finished == 1)
+            return;
     }
 
     //for each orientation of the current piece
@@ -179,19 +134,33 @@ const int start, const int end, const bool displaySolutions, const bool storeSol
             //try to fit the current piece
             bool pieceFits = fitInGrid(orientation, row, col, pieces[depth].symbol);
             if (pieceFits) {
-                //recurse with the next piece
-                bool result = thread_recursiveSolver(pieces, depth + 1, 0, gridHeight * gridWidth - 1, 
-                    displaySolutions, storeSolutions);
-                if (result) { //if it was successful, then we've found enough solutions and we can stop
-                    return true;
-                } else {
-                    removeFromGrid(orientation, row, col, pieces[depth].symbol);
+                if (depth < pieces.size() - 1) { //we have more pieces to place for a solution
+                    //recurse with the next piece
+                    finished = (ThreadManager::createSolverThreads(grid, pieces, depth + 1, thread_countPerDepth[depth + 1])) ? 1 : 0;
+                    if (finished == 1) { //if it was successful, then we've found enough solutions and we can stop
+                        return;
+                    } else {
+                        removeFromGrid(orientation, row, col, pieces[depth].symbol, false);
+                    }
+                } else { //we've found a solution, do processing here to avoid duplicate solutions
+                    pthread_mutex_lock(&ThreadManager::mutex);
+                    ++PuzzleSolver::solutionsFound;
+                    PuzzleSolver::solutions.push_back(grid);
+
+                    //if we've found enough solutions, then pass on the message that we should stop
+                    finished = (numSolutions >= 0 && PuzzleSolver::solutionsFound >= numSolutions) ? 1 : 0;
+                    pthread_mutex_unlock(&ThreadManager::mutex);
+                    if (finished == 1) { 
+                        return;
+                    } else {
+                        removeFromGrid(orientation, row, col, pieces[depth].symbol, false);
+                    }
                 }
             }
         }
     }
-    //if we reach this, then we haven't found enough valid solutions, so return false
-    return false;
+    //if we reach this, then we've searched the whole grid, so return regardless of whether we've found a solution
+    return;
 }
 
 //Eliminates the need for recursion, but seems to be much slower
@@ -258,4 +227,9 @@ bool PuzzleSolver::nonRecursiveSolver(const std::vector<Piece>& pieces) {
             return false;
         }
     }
+}
+
+void PuzzleSolver::removeDuplicateSolutions() {
+    //radix sort
+    
 }

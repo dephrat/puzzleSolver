@@ -11,4 +11,5 @@ extern std::vector<std::vector<bool>>
     greenPieceDefn, 
     limePieceDefn, 
     redPieceDefn, 
-    purplePieceDefn;
+    purplePieceDefn,
+    hugePieceDefn;
